@@ -19,7 +19,7 @@ class Square(Figure):
       return self.__side_length ** 2
    
    def info(self):
-      return f"Square side length: {self.__side_length}cm, area: {self.calculate_area()}cm^2."
+      return f"Square side length: {self.__side_length}{Figure.unit}, area: {self.calculate_area()}{Figure.unit}^2."
    
       
 class Rectangle(Figure):
@@ -32,7 +32,7 @@ class Rectangle(Figure):
       return self.__length * self.__width
       
    def info(self):
-      return f"Rectangle length: {self.__length}cm, width: {self.__width}cm,  area: {self.calculate_area()}cm^2."
+      return f"Rectangle length: {self.__length}{Figure.unit}, width: {self.__width}{Figure.unit},  area: {self.calculate_area()}{Figure.unit}^2."
    
 square_1 = Square(25)
 # print(square_1.info())
