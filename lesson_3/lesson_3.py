@@ -89,9 +89,8 @@ print(phone)
 print(smartphone1)
 print(smartphone2)
 
-print("\n=== Опробование методов ===")
 
-print("Вычисления на компьютере:", computer.make_computations())
+print("\nВычисления на компьютере:", computer.make_computations())
 
 phone.call(1, "+996 777 99 88 11")
 
@@ -99,8 +98,7 @@ smartphone1.call(2, "+996 555 55 55 55")
 smartphone1.use_gps("Бишкек")
 
 
-
-print("\nСравнение:\n")
+print("\nСравнение:")
 print("computer == smartphone1:", computer == smartphone1)
 print("computer != smartphone2:", computer != smartphone2)
 print("computer < smartphone1:", computer < smartphone1)
