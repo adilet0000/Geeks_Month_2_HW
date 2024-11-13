@@ -1,7 +1,4 @@
-# я понял как копировать и отвязывать, но не стал так как не хочу создавать новый репозиторий
-
 from random import randint, choice
-
 
 class GameEntity:
     def __init__(self, name, health, damage):
@@ -35,7 +32,6 @@ class GameEntity:
     def __str__(self):
         return f'{self.__name} health: {self.health} damage: {self.damage}'
 
-
 class Boss(GameEntity):
     def __init__(self, name, health, damage):
         super().__init__(name, health, damage)
@@ -48,7 +44,7 @@ class Boss(GameEntity):
     def attack(self, heroes):
         for hero in heroes:
             if hero.health > 0:
-                if type(hero) == Berserk and self.__defence != hero.ability:
+                if isinstance(hero, Berserk) and self.__defence != hero.ability:
                     hero.blocked_damage = choice([5, 10])
                     hero.health -= (self.damage - hero.blocked_damage)
                 else:
@@ -60,7 +56,6 @@ class Boss(GameEntity):
 
     def __str__(self):
         return 'BOSS ' + super().__str__() + f' defence: {self.__defence}'
-
 
 class Hero(GameEntity):
     def __init__(self, name, health, damage, ability):
@@ -77,7 +72,6 @@ class Hero(GameEntity):
     def apply_super_power(self, boss, heroes):
         pass
 
-
 class Warrior(Hero):
     def __init__(self, name, health, damage):
         super().__init__(name, health, damage, 'CRITICAL_DAMAGE')
@@ -87,15 +81,14 @@ class Warrior(Hero):
         boss.health -= crit
         print(f'Warrior {self.name} hit critically {crit} to boss.')
 
-
 class Magic(Hero):
     def __init__(self, name, health, damage):
         super().__init__(name, health, damage, 'BOOST')
 
     def apply_super_power(self, boss, heroes):
         for hero in heroes:
-            hero.damage += 5
-        
+            hero.damage += 5 # написано после каждого раунда, но кажется это слишком сильно
+
 class Witcher(Hero):
     def __init__(self, name, health, damage):
         super().__init__(name, health, 0, 'REINCORNATION')
@@ -104,22 +97,12 @@ class Witcher(Hero):
         for hero in heroes:
             if hero.health == 0:
                 chance = randint(1, 5)
-                if choice >= 2:
-                    for hero in heroes:
-                        if hero.health == 0:
-                            hero.health += 150
-                            self.health = 0
-                            break
-                        else:
-                            continue
-                self.health = 0
-                print('Unfortunately witchcraft killed the witcher.')
-                break
-            else:
-                pass
-                
+                if chance >= 2:
+                    hero.health += 150
+                    self.health = 0
+                    print('Witcher sacrificed himself for', hero.name)
+                    break
 
-# 3. Hacker, который будет через раунд забирать у Босса N-ое количество здоровья и переводить его одному из героев.
 class Hacker(Hero):
     def __init__(self, name, health, damage):
         super().__init__(name, health, damage, 'VAMPIRIC')
@@ -128,16 +111,10 @@ class Hacker(Hero):
     @property
     def lifesteal(self):
         return self.__lifesteal
-
-    # @lifesteal.setter
-    # def lifesteal(self, value):
-    #     self.__lifesteal = value
         
     def apply_super_power(self, boss, heroes):
         boss.health -= self.__lifesteal
         choice(heroes).health += self.__lifesteal
-        
-
 
 class Berserk(Hero):
     def __init__(self, name, health, damage):
@@ -156,7 +133,6 @@ class Berserk(Hero):
         boss.health -= self.__blocked_damage
         print(f'Berserk {self.name} reverted {self.__blocked_damage} to boss.')
 
-
 class Medic(Hero):
     def __init__(self, name, health, damage, heal_points):
         super().__init__(name, health, damage, 'HEAL')
@@ -166,17 +142,37 @@ class Medic(Hero):
         for hero in heroes:
             if hero.health > 0 and self != hero:
                 hero.health += self.__heal_points
+                
+class King(Hero):
+    def __init__(self, name, health, damage):
+        super().__init__(name, health, 0, 'SUMMON_SAITAMA')
+
+    def apply_super_power(self, boss, heroes):
+        if randint(1, 10) == 1:
+            boss.health = 0
+            print(f'{self.name} summoned Saitama! Saitama defeated the Boss with a single punch!')
+
+
+class Golem(Hero):
+    def __init__(self, name, health, damage):
+        super().__init__(name, health, damage, 'SHIELD')
+
+    def apply_super_power(self, boss, heroes):
+        self.shield_amount = boss.damage // 5
+        for hero in heroes:
+            if hero.health > 0 and hero != self:
+                hero.health += self.shield_amount
+                self.health -= self.shield_amount
+        print(f'{self.name} absorbed {self.shield_amount} damage for each hero from the Boss.')
 
 
 round_number = 0
-
 
 def show_statistics(boss, heroes):
     print(f'ROUND - {round_number} ------------')
     print(boss)
     for hero in heroes:
         print(hero)
-
 
 def play_round(boss, heroes):
     global round_number
@@ -188,7 +184,6 @@ def play_round(boss, heroes):
             hero.attack(boss)
             hero.apply_super_power(boss, heroes)
     show_statistics(boss, heroes)
-
 
 def is_game_over(boss, heroes):
     if boss.health <= 0:
@@ -206,18 +201,22 @@ def is_game_over(boss, heroes):
 
 
 def start_game():
-    boss = Boss(name='Dragon', health=1000, damage=50)
+    boss = Boss(name='Dragon', health=2000, damage=75)
     warrior_1 = Warrior(name='Mario', health=270, damage=10)
     warrior_2 = Warrior(name='Ben', health=280, damage=15)
     magic = Magic(name='Merlin', health=290, damage=10)
     berserk = Berserk(name='Guts', health=260, damage=5)
     doc = Medic(name='Aibolit', health=250, damage=5, heal_points=15)
     assistant = Medic(name='Kristin', health=300, damage=5, heal_points=5)
-    heroes_list = [warrior_1, doc, warrior_2, magic, berserk, assistant]
+    hacker = Hacker(name='Robert', health=210, damage=5)
+    witcher = Witcher(name='Nerzul', health=190, damage=0)
+    king = King(name='King', health=200, damage=0)
+    golem = Golem(name='Golem', health=500, damage=5)
+
+    heroes_list = [warrior_1, doc, warrior_2, magic, berserk, assistant, hacker, king, witcher, golem]
 
     show_statistics(boss, heroes_list)
     while not is_game_over(boss, heroes_list):
         play_round(boss, heroes_list)
-
 
 start_game()
