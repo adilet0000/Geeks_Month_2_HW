@@ -93,8 +93,50 @@ class Magic(Hero):
         super().__init__(name, health, damage, 'BOOST')
 
     def apply_super_power(self, boss, heroes):
-        pass
-        # TODO Here will be implementation of BOOSTING
+        for hero in heroes:
+            hero.damage += 5
+        
+class Witcher(Hero):
+    def __init__(self, name, health, damage):
+        super().__init__(name, health, 0, 'REINCORNATION')
+    
+    def apply_super_power(self, boss, heroes):
+        for hero in heroes:
+            if hero.health == 0:
+                chance = randint(1, 5)
+                if choice >= 2:
+                    for hero in heroes:
+                        if hero.health == 0:
+                            hero.health += 150
+                            self.health = 0
+                            break
+                        else:
+                            continue
+                self.health = 0
+                print('Unfortunately witchcraft killed the witcher.')
+                break
+            else:
+                pass
+                
+
+# 3. Hacker, который будет через раунд забирать у Босса N-ое количество здоровья и переводить его одному из героев.
+class Hacker(Hero):
+    def __init__(self, name, health, damage):
+        super().__init__(name, health, damage, 'VAMPIRIC')
+        self.__lifesteal = 10
+    
+    @property
+    def lifesteal(self):
+        return self.__lifesteal
+
+    # @lifesteal.setter
+    # def lifesteal(self, value):
+    #     self.__lifesteal = value
+        
+    def apply_super_power(self, boss, heroes):
+        boss.health -= self.__lifesteal
+        choice(heroes).health += self.__lifesteal
+        
 
 
 class Berserk(Hero):
